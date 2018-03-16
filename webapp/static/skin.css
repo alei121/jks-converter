@@ -1,0 +1,15 @@
+.dropbox {
+  color: #ccc;
+  border-style: dashed;
+  border-color: #ccc;
+  height: 200px;
+  text-align: center;
+  align-items: center;
+  justify-content: center;
+  display: flex;
+}
+
+.dropbox.over {
+  color: #222;
+  border-color: #222;
+}

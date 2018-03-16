@@ -1,0 +1,130 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+
+    <link rel="stylesheet" href="static/layout.css">
+    <link rel="stylesheet" href="static/skin.css">
+
+    <title>PEM to JKS</title>
+  </head>
+  <body>
+
+    <!-- Optional JavaScript -->
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+    <script src="https://code.jquery.com/jquery-3.3.1.min.js"
+     integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+    
+    <script>
+    var uploadFiles = function(files) {
+      var $form = $('#certForm');
+      var $input = $form.find('#files');
+      var data = new FormData($form.get(0));
+      $.each(files, function(i, file) {
+        data.append($input.attr('name'), file)
+      })
+      
+      $.ajax({
+        type: "POST",
+        enctype: 'multipart/form-data',
+        url: "/upload",
+        data: data,
+        processData: false,
+        contentType: false,
+        cache: false,
+        timeout: 600000,
+        success: function (data) {
+          $("#pemCount").html(data.pemCount);
+          $("#keyCount").html(data.keyCount);
+        },
+        error: function (e) {
+            $("#result").text(e.responseText);
+            console.log("ERROR : ", e);
+        }
+      });
+    }
+
+    $("document").ready(function() {
+        $("#dropbox").on("dragover", function(e) {
+          e.preventDefault();
+          $("#dropbox").addClass("over")
+        });
+        $("#dropbox").on("dragleave", function(e) {
+          e.preventDefault();
+          $("#dropbox").removeClass("over")
+        });
+        $("#dropbox").on("drop", function(e) {
+          e.preventDefault();
+          $("#dropbox").removeClass("over")
+          uploadFiles(e.originalEvent.dataTransfer.files)
+        });
+        $("#clear").click(function(e) {
+          e.preventDefault();
+          console.log("Clear!");
+          $.post("/clear", function() {
+            $.get("/status", function(data) {
+              $("#pemCount").html(data.pemCount);
+              $("#keyCount").html(data.keyCount);
+            });
+          });
+        });
+        $.get("/status", function(data) {
+          $("#pemCount").html(data.pemCount);
+          $("#keyCount").html(data.keyCount);
+        });
+    });
+    
+    </script>
+
+    <div class="container">
+      <div class="row">
+        <div class="col">
+          <h1>PEM to JKS converter</h1>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col">
+          <div class="container">
+            <div class="row">
+              <div class="col dropbox" id="dropbox">
+                <div class="dropbox--text">
+                  <p>Drag pem and key files here</p>
+                  <p>
+                    <span id="pemCount">0</span> pem and 
+                    <span id="keyCount">0</span> key uploaded
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col">
+            <div class="container">
+              <form method="post" id="certForm" action="/downloadZip" enctype="multipart/form-data" class="box">
+                <input type="file" id="files" name="file[]" multiple="true" class="box__file"/>
+              <div class="row">
+                <input type="password" id="password" class="col form-control" name="password" placeholder="Password"/>
+              </div>
+              <div class="row">
+                <input type="submit" id="downloadZip" class="col btn btn-primary" value="Download jks.zip"/>
+              </form>
+              </div>
+              <div class="row">
+                <button id="clear" class="col btn btn-danger">Clear</button>
+              </div>
+            </div>
+        </div>
+      </div>
+    </div>
+    
+  </body>
+</html>
