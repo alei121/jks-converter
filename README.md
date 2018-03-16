@@ -7,3 +7,6 @@ Drag all relevant pem and key files into the dropbox and the tool will:
 - create a trust.jks for all certs
 - return a zip file with the two jks files
 
+The docker image is based on openjdk:8-jre-alpine for the utility "keytool" to create jks.
+It installs python3 and Flask for the webapp, and openssl to handle key files.
+
