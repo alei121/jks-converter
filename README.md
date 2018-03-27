@@ -3,7 +3,9 @@
 This docker image runs a webapp that converts pem and key files into jks files.
 
 For example, start container with this:
+```
   docker run -p 5000:80 alei121/jks-convert
+```
 Then access from a browser with url localhost:5000
 
 To convert pem/key to jks files:
